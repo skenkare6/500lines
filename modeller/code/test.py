@@ -1,7 +1,7 @@
 import unittest
 
 import numpy
-from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN
+from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON
 from mock import MagicMock, patch
 from viewer import Viewer
 from node import Cube, Sphere, SnowFigure, Node
@@ -76,18 +76,20 @@ class MyTestCase(unittest.TestCase):
         self.v()
         self.assertTrue(self.success)
 
-    # def pan_interaction_test(self, obj):
-    #     # 270, 217 is the default x,y of the sphere
-    #     obj.interaction.handle_keystroke('s', 10, 10)
-    #     obj.interaction.handle_mouse_button(self.key, GLUT_DOWN, 10, 10)
-    #     if obj.scene.node_list[3].selected:
-    #         self.success = True
-    #
-    # def test_pick_sphere(self):
-    #     self.key = GLUT_LEFT_BUTTON
-    #     self.node_type = Sphere
-    #     self.v.interaction_test = self.mouse_interaction_test
-    #     self.v()
-    #     self.assertTrue(self.success)
+    def pan_interaction_test(self, obj):
+        # 270, 217 is the default x,y of the sphere
+        obj.interaction.pressed = GLUT_MIDDLE_BUTTON
+        obj.interaction.mouse_loc = [10,10,]
+        with patch('interaction.Interaction.translate') as thing:
+            obj.interaction.handle_mouse_move(10, 10)
+            thing.assert_called()
+            self.success = True
+
+    def test_pan_scene(self):
+        self.key = GLUT_MIDDLE_BUTTON
+        self.v.interaction_test = self.pan_interaction_test
+        self.v()
+        self.assertTrue(self.success)
+
 if __name__ == '__main__':
     unittest.main()
