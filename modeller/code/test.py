@@ -1,10 +1,11 @@
 import unittest
 
 import numpy
-from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON
+from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
 from mock import MagicMock, patch
 from viewer import Viewer
 from node import Cube, Sphere, SnowFigure, Node
+from trackball import Trackball
 
 
 # https://stackoverflow.com/questions/5595425/what-is-the-best-way-to-compare-floats-for-almost-equality-in-python/33024979
@@ -86,10 +87,24 @@ class MyTestCase(unittest.TestCase):
             self.success = True
 
     def test_pan_scene(self):
-        self.key = GLUT_MIDDLE_BUTTON
         self.v.interaction_test = self.pan_interaction_test
         self.v()
         self.assertTrue(self.success)
+
+
+    def test_rotate_scene(self):
+        self.v.interaction_test = self.rotate_interaction_test
+        self.v()
+        self.assertTrue(self.success)
+
+    def rotate_interaction_test(self, obj):
+        # 270, 217 is the default x,y of the sphere
+        obj.interaction.pressed = GLUT_RIGHT_BUTTON
+        obj.interaction.mouse_loc = [10,10,]
+        with patch('trackball.Trackball.drag_to') as thing:
+            obj.interaction.handle_mouse_move(15, 15)
+            thing.assert_called()
+            self.success = True
 
 if __name__ == '__main__':
     unittest.main()
