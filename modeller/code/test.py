@@ -1,9 +1,10 @@
 import unittest
 
 import numpy
+from OpenGL.GLUT import GLUT_LEFT_BUTTON
 from mock import MagicMock
 from viewer import Viewer
-from node import Cube, Sphere
+from node import Cube, Sphere, SnowFigure
 
 
 # https://stackoverflow.com/questions/5595425/what-is-the-best-way-to-compare-floats-for-almost-equality-in-python/33024979
@@ -54,27 +55,31 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(self.success)
         # should check its a cube and not just that it exists
 
-    # def test_pick(self):
-    #     self.key = 'd'
-    #     self.v.interaction_test = self.node_interaction_test
+    def test_create_object_figure(self):
+        self.key = 'f'
+        self.node_type = SnowFigure
+        self.v.interaction_test = self.node_interaction_test
+        self.v()
+        self.assertTrue(self.success)
+
+    # def mouse_interaction_test(self, obj):
+    #     # we need to reverse and get 2d x,y from 3d translation matrix
+    #     start, direction = self.v.get_ray(obj, 10, 10)
+    #     # place the node at the cursor in camera-space
+    #     translation = (start + direction * obj.scene.PLACE_DEPTH)
+    #     # convert the translation to world-space
+    #     pre_tran = numpy.array([translation[0], translation[1], translation[2], 1])
+    #     translation = obj.inverseModelView.dot(pre_tran)
+    #     obj.interaction.handle_mouse_button(self.key, x, y)
+    #
+    #
+    #
+    # def test_pick_sphere(self):
+    #     self.key = GLUT_LEFT_BUTTON
+    #     self.node_type = Sphere
+    #     self.v.interaction_test = self.mouse_interaction_test
     #     self.v()
     #     self.assertTrue(self.success)
-    #
-    # def test_rotate(self):
-    #     # right click drag
-    #     self.assertEqual(True, False)
-
-    # def test_drag_object(self):
-    #     # left click on object
-    #     v = Viewer()
-    #     modeller = subprocess.call(v.main_loop())
-    #     m = PyMouse()
-    #     x_dim, y_dim = m.screen_size()
-    #     m.click(x_dim / 2, y_dim / 2, 1)
-    #
-    #     #find element, by id?
-    #     #action chains drag and drop?
-    #     self.assertEqual(True, False)
 
 if __name__ == '__main__':
     unittest.main()
