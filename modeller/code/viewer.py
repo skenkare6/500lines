@@ -28,6 +28,7 @@ class Viewer(object):
         self.init_scene()
         self.init_interaction()
         init_primitives()
+        self.interaction_test(self)
 
     def init_interface(self):
         """ initialize the window and register the render function """
@@ -173,6 +174,9 @@ class Viewer(object):
     def scale(self, up):
         """ Scale the selected Node. Boolean up indicates scaling larger."""
         self.scene.scale_selected(up)
+
+    def interaction_test(self, obj):
+        pass
 
 
 if __name__ == "__main__":
