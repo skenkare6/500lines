@@ -39,7 +39,7 @@ class MyTestCase(unittest.TestCase):
                 break
 
     def test_create_object_sphere(self):
-        # with 'S'g
+        # with 'S'
         self.key = 's'
         self.node_type = Sphere
         self.v.interaction_test = self.node_interaction_test
