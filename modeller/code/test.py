@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import unittest
-
+import dis
 import numpy
 from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
 from mock import MagicMock, patch
@@ -20,7 +20,6 @@ class MyTestCase(unittest.TestCase):
         self.v.main_loop = MagicMock(name='main_loop')
         self.success = False
         self.key = ''
-        self.node_type = None
 
     def node_interaction_test(self, obj):
         obj.interaction.handle_keystroke(self.key, 10, 10)
@@ -40,7 +39,7 @@ class MyTestCase(unittest.TestCase):
                 break
 
     def test_create_object_sphere(self):
-        # with 'S'
+        # with 'S'g
         self.key = 's'
         self.node_type = Sphere
         self.v.interaction_test = self.node_interaction_test
