@@ -1,12 +1,10 @@
 #! /usr/bin/env python
 import unittest
-import dis
 import numpy
 from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
 from mock import MagicMock, patch
 from viewer import Viewer
-from node import Cube, Sphere, SnowFigure, Node
-from trackball import Trackball
+from node import Cube, Sphere, SnowFigure
 
 
 # https://stackoverflow.com/questions/5595425/what-is-the-best-way-to-compare-floats-for-almost-equality-in-python/33024979
