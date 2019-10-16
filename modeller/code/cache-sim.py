@@ -1,21 +1,6 @@
-# from numpy.ma import log2, floor, ceil
-#
-# def is_base_2(num):
-#     return ceil(log2(num)) == floor(log2(num))
-#
-# class cache():
-#     MAX_ASSOC = 4
-#     def __init__(self, a, b, c):
-#         self.associativity = a if a <= self.MAX_ASSOC else self.MAX_ASSOC
-#         self.block = b if is_base_2(b) else 2 ** floor(log2(b))
-#         self.cachesize = c if is_base_2(c) else 2** floor(log2(c))
-#
-#         self.data = list()
-import tokenize
-from argparse import ArgumentParser
-from io import BytesIO
-from sys import stdin, stdout
 
+from argparse import ArgumentParser
+from sys import stdin
 from cachesim import Cache, MainMemory, CacheSimulator
 
 def create_cache(f):

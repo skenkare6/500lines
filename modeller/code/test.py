@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import unittest
 import numpy
+from cffi import FFI
 from OpenGL.GLUT import GLUT_LEFT_BUTTON, GLUT_DOWN, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON
 from mock import MagicMock, patch
 from viewer import Viewer
@@ -14,6 +15,7 @@ def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
+
         self.v = Viewer
         self.v.main_loop = MagicMock(name='main_loop')
         self.success = False
@@ -105,4 +107,13 @@ class MyTestCase(unittest.TestCase):
             self.success = True
 
 if __name__ == '__main__':
+    ffib = FFI()
+    ffib.cdef("""
+    void start() {
+        int p = 0;
+        return &p;
+    }
+    """)
+    C = ffib.dlopen(None)
+    ffib.
     unittest.main()
