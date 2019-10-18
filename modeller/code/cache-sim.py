@@ -1,3 +1,4 @@
+import argparse
 import sys
 from argparse import ArgumentParser, Namespace
 from sys import stdin
@@ -87,27 +88,13 @@ def range_simulate(f):
         row_iteration(nf, row, csvr)
 
     csvr.writerow([])
-    csvr.writerow(['b1'] + stddata)
-    for i in range(4,10):
+    csvr.writerow(['bAll'] + stddata)
+    for i in range(5,10): # block size can't really change between levels
         bs = 2 ** i
         row = [bs]
         nf = copy_change_arg(f, 'b1', bs)
-        row_iteration(nf, row, csvr)
-
-    csvr.writerow([])
-    csvr.writerow(['b2'] + stddata)
-    for i in range(4,10):
-        bs = 2 ** i
-        row = [bs]
-        nf = copy_change_arg(f, 'b2', bs)
-        row_iteration(nf, row, csvr)
-
-    csvr.writerow([])
-    csvr.writerow(['b3'] + stddata)
-    for i in range(4,10):
-        bs = 2 ** i
-        row = [bs]
-        nf = copy_change_arg(f, 'b3', bs)
+        setattr(nf, 'b2', bs)
+        setattr(nf, 'b3', bs)
         row_iteration(nf, row, csvr)
 
     csvr.writerow([])
@@ -154,13 +141,13 @@ if __name__ == "__main__":
                         help='block size of l3 cache in B (default: 64)')
     args.add_argument('-c1', dest='c1', action='store', type=int, default=128,
                         help='sets of cache lines of l1 (default: 128)') # default 64KB (32 data + 32 instruction)
-    args.add_argument('-c2', dest='c2', action='store', type=int, default=512,
+    args.add_argument('-c2', dest='c2', action='store', type=int, default=512, # 262,144
                         help='sets of cache lines l2 (default: 512)') # default 256KB
-    args.add_argument('-c3', dest='c3', action='store', type=int, default=16384,
+    args.add_argument('-c3', dest='c3', action='store', type=int, default=16384, #
                         help='sets of cache lines l3 (default: 16384)') # default 8MB
     args.add_argument('-i', dest='i', action='store', type=file, default=stdin,
                         help='input pinatrace file')
-    args.add_argument('-o', dest='o', action='store', type=file, default=sys.stdout,
+    args.add_argument('-o', dest='o', action='store', type=argparse.FileType('wb'), default=sys.stdout,
                         help='output file (default stdout)')
     f = args.parse_args()
     if f.r:
