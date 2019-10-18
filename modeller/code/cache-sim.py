@@ -1,7 +1,8 @@
-
-from argparse import ArgumentParser
+import sys
+from argparse import ArgumentParser, Namespace
 from sys import stdin
 from cachesim import Cache, MainMemory, CacheSimulator
+import csv
 
 def create_cache(f):
     """
@@ -16,10 +17,6 @@ def create_cache(f):
     l2 = Cache("L2", f.c2, f.a2, f.b2, "LRU", store_to=l3, load_from=l3)  # 256KB
     l1 = Cache("L1",  f.c1, f.a1, f.b1, "LRU", store_to=l2, load_from=l2)  # 32KB
     return CacheSimulator(l1, mem)
-
-
-
-
 
 
 def simulate_cache(f):
@@ -52,30 +49,97 @@ def simulate_cache(f):
             break
 
     cs.force_write_back()
-    cs.print_stats()
+    return cs
 
+def row_iteration(nf, row, csvr):
+    sc = simulate_cache(nf).stats()
+    for s in sc:  # get the cache levels
+        row.append(round(100 * s['HIT_count'] / float(s['HIT_count'] + s['MISS_count']), 2))  # hit rate percent
+    csvr.writerow(row)
+    f.i.seek(0)
 
+def copy_change_arg(f, field, value):
+    nf = Namespace(**vars(f))
+    setattr(nf, field, value)
+    return nf
 
+def range_simulate(f):
+    stddata = ['L1 HR', 'L2 HR', 'L3 HR']
+    csvr = csv.writer(f.o)
+    csvr.writerow(['a1'] + stddata)
+    for i in range(1, f.a1, 1): # change associativity of 1st level cache
+        row = [i]
+        nf = copy_change_arg(f, 'a1', i)
+        row_iteration(nf,row,csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['a2'] + stddata)
+    for i in range(1, f.a2, 1):
+        row = [i]
+        nf = copy_change_arg(f, 'a2', i)
+        row_iteration(nf,row,csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['a3'] + stddata)
+    for i in range(1, f.a3, 1):
+        row = [i]
+        nf = copy_change_arg(f, 'a3', i)
+        row_iteration(nf, row, csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['b1'] + stddata)
+    for i in range(4,10):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'b1', bs)
+        row_iteration(nf, row, csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['b2'] + stddata)
+    for i in range(4,10):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'b2', bs)
+        row_iteration(nf, row, csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['b3'] + stddata)
+    for i in range(4,10):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'b3', bs)
+        row_iteration(nf, row, csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['c1'] + stddata)
+    for i in range(7,15):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'c1', bs)
+        row_iteration(nf, row, csvr)
 
+    csvr.writerow([])
+    csvr.writerow(['c2'] + stddata)
+    for i in range(7,15):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'c2', bs)
+        row_iteration(nf, row, csvr)
 
-
-
-
-
-
-
-
+    csvr.writerow([])
+    csvr.writerow(['c3'] + stddata)
+    for i in range(7,15):
+        bs = 2 ** i
+        row = [bs]
+        nf = copy_change_arg(f, 'c3', bs)
+        row_iteration(nf, row, csvr)
 
 
 if __name__ == "__main__":
     args = ArgumentParser(description='Cache simulator based on memory trace (cachesize = a*b*c Bytes)')
     # defaults based on i7-4770k
+    args.add_argument('-r', dest='r', action='store_const', default=False, const=True,
+                        help='run sim over a range of values based on parameters and outputs a csv file')
     args.add_argument('-a1', dest='a1', action='store', type=int, default=8,
                         help='associativity of l1 cache (default: 8)')
     args.add_argument('-a2', dest='a2', action='store', type=int, default=8,
@@ -96,7 +160,12 @@ if __name__ == "__main__":
                         help='sets of cache lines l3 (default: 16384)') # default 8MB
     args.add_argument('-i', dest='i', action='store', type=file, default=stdin,
                         help='input pinatrace file')
-    # args.add_argument('-o', dest='of', action='store', type=file, default=stdout,
-    #                     help='output file (default stdout)')
+    args.add_argument('-o', dest='o', action='store', type=file, default=sys.stdout,
+                        help='output file (default stdout)')
+    f = args.parse_args()
+    if f.r:
+        range_simulate(f)
+    else:
+        simulate_cache(f).print_stats()
 
-    simulate_cache(args.parse_args())
+
